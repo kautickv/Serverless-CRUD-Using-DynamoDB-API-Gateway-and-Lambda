@@ -1,7 +1,7 @@
 
 // Global variables
 var dynamoDBTableName = "lambda-apigateway-student_info";
-
+var APIURL = "https://x1chs40000.execute-api.us-east-1.amazonaws.com/Prod/dynamodbmanager";
 
 // By Default, when page loads, make all form component invisible
 window.document.getElementById("addStudentDiv").style.visibility = "hidden";
@@ -69,7 +69,7 @@ async function listAllStudent() {
     }
   }
 
-  fetch("https://x1chs40000.execute-api.us-east-1.amazonaws.com/Prod/dynamodbmanager", {
+  fetch(APIURL, {
     method: "POST",
     headers: {
       "Content-Type": "text/pain",
@@ -108,7 +108,48 @@ function recreateTableInHTML(data){
 }
 
 
-function addStudent() {}
+async function addStudent() {
+    // This function will read in the values in the form and add a student in the database
+
+    var firstName = window.document.getElementById("firstNameAdd").value
+    var lastName = window.document.getElementById("lastNameAdd").value
+    var email = window.document.getElementById("inputEmailAdd").value
+    var address = window.document.getElementById("inputAddressAdd").value
+
+    // Insert element in database
+    payload = {
+        "operation": "create",
+        "tableName": dynamoDBTableName,
+        "payload": {
+        "Item": {
+            "id": email,
+            "first_name": firstName,
+            "last_name": lastName,
+            "address": address
+            }
+        }
+    }
+
+    fetch(APIURL,{
+        method: "POST",
+        headers: {
+            "Content-Type": "text/plain"
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {response.json()})
+    .then(data => {
+        if (data['ResponseMetadata']['HTTPStatusCode'] === 200){
+            alert("Student inserted in Database")
+        }else{
+            throw new Error ('Data was not inserted in Database');
+        }
+    })
+    .catch(err =>{
+        console.log("There was an error inserting element into database: " + err);
+    })
+
+}
 
 function updateStudent() {}
 
