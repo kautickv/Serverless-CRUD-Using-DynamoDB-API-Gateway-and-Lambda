@@ -1,3 +1,8 @@
+
+// Global variables
+var dynamoDBTableName = "lambda-apigateway-student_info";
+
+
 // By Default, when page loads, make all form component invisible
 window.document.getElementById("addStudentDiv").style.visibility = "hidden";
 window.document.getElementById("addStudentDiv").style.display = "none";
@@ -5,6 +10,9 @@ window.document.getElementById("updateStudentDiv").style.visibility = "hidden";
 window.document.getElementById("updateStudentDiv").style.display = "none";
 window.document.getElementById("deleteStudentDiv").style.visibility = "hidden";
 window.document.getElementById("deleteStudentDiv").style.display = "none";
+
+// Populate all students table
+listAllStudent();
 
 function displayAddStudentForm() {
   // This function will display the form to the user to add a new student.
@@ -50,20 +58,55 @@ function displayDeleteStudentForm() {
   window.document.getElementById("updateStudentDiv").style.display = "none";
 }
 
-function listAllStudent() {
+async function listAllStudent() {
  // This function will send an HTTP post request to the lambda function.
+
+  var payload = {
+    "operation": "list",
+    "tableName": dynamoDBTableName,
+    "payload": {
+      "Item": {}
+    }
+  }
 
   fetch("https://x1chs40000.execute-api.us-east-1.amazonaws.com/Prod/dynamodbmanager", {
     method: "POST",
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
+      "Content-Type": "text/pain",
     },
-    body: JSON.stringify({ id: 78912 }),
+    body: JSON.stringify(payload),
   })
     .then((response) => response.json())
-    .then((response) => console.log(JSON.stringify(response)));
+    .then(data =>{
+       recreateTableInHTML(data);
+    })
+    .catch(err =>{
+        console.log("An error occurred while trying to get all the data from DB: " + err);
+    })
 }
+
+function recreateTableInHTML(data){
+    // This function takes in a json object containing all the data from the database
+    // Will print the data into the table in the html file.
+
+    items = data["Items"];
+    // Clean the table body
+    window.document.getElementById("tableBody").innerHTML="";
+    var block = ''
+    // Build HTML block for table body
+    for (var key in items){
+        block = block + '<tr>';
+        block = block + '<th scope="row">' + key + '</th>';
+        block = block + '<td>' + items[key]['first_name']['S'] + '</td>';
+        block = block + '<td>' + items[key]['last_name']['S'] + '</td>';
+        block = block + '<td>' + items[key]['id']['S'] + '</td>';
+        block = block + '<td>' + items[key]['address']['S'] + '</td>';
+        block = block + '</tr>'
+    }
+    // Add  block to table
+    window.document.getElementById("tableBody").innerHTML = block;
+}
+
 
 function addStudent() {}
 
