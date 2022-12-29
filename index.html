@@ -110,6 +110,7 @@
                 class="form-control"
                 id="inputEmailUpdateIdentifier"
                 placeholder="Email"
+                required
               />
             </div>
           </div>
@@ -122,6 +123,7 @@
                 class="form-control"
                 id="firstNameUpdate"
                 placeholder="First Name"
+                required
               />
             </div>
             <div class="form-group col-md-6">
@@ -131,6 +133,7 @@
                 class="form-control"
                 id="lastNameUpdate"
                 placeholder="Last Name"
+                required
               />
             </div>
           </div>
@@ -142,6 +145,7 @@
                 class="form-control"
                 id="inputEmailUpdate"
                 placeholder="Email"
+                required
               />
             </div>
           </div>
@@ -152,6 +156,7 @@
               class="form-control"
               id="inputAddressUpdate"
               placeholder="1234 Main St"
+              required
             />
           </div>
           <button
@@ -159,7 +164,7 @@
             class="btn btn-primary"
             onClick="updateStudent()"
           >
-            Add Student
+            Update Student
           </button>
         </form>
       </div>
@@ -168,14 +173,13 @@
           <div class="form-row">
             <div class="form-group col-md-6">
               <label
-                >Input the email of the student for whom you would like to
-                delete all info</label
-              >
+                >Input the email of the student to delete</label>
               <input
                 type="email"
                 class="form-control"
                 id="inputEmailDelete"
                 placeholder="Email"
+                required
               />
             </div>
           </div>

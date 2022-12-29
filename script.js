@@ -84,6 +84,7 @@ async function listAllStudent() {
       console.log(
         "An error occurred while trying to get all the data from DB: " + err
       );
+      alert('An error occurred. Please try again later');
     });
 }
 
@@ -132,24 +133,27 @@ async function addStudent() {
   };
 
   fetch(APIURL, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "text/plain",
+      'Content-Type': 'text/plain',
     },
     body: JSON.stringify(payload),
   })
-    .then((response) => {
-      response.json();
-    })
-    .then((data) => {
-      if (data["ResponseMetadata"]["HTTPStatusCode"] === 200) {
-        alert("Student inserted in Database");
-      } else {
-        throw new Error("Data was not inserted in Database");
+    .then(async (response) => {
+      var message = await response.text();
+      message = JSON.parse(message);
+      console.log(message)
+
+      if (message['statusCode'] === 200){
+        alert(message.message);
+      }else{
+        throw "Could not insert student. Please try again later";
       }
+
     })
     .catch((err) => {
       console.log("There was an error inserting element into database: " + err);
+      alert(err.message)
     });
 }
 
@@ -167,7 +171,7 @@ async function updateStudent() {
   // Build payload.
   payload = {
     operation: "update",
-    tableName: "lambda-apigateway-student_info",
+    tableName: dynamoDBTableName,
     payload: {
       Item: {
         id: emailIdentifier,
@@ -199,6 +203,8 @@ async function updateStudent() {
     console.log(message)
     if(message["statusCode"] == 200){
       alert(message.message);
+    }else{
+      alert(message.message);
     }
 
   })
@@ -208,4 +214,49 @@ async function updateStudent() {
   })
 }
 
-function deleteStudent() {}
+async function deleteStudent() {
+  // This function will delete a student record from the database given the student email address.
+
+  // Read the student email address from the textbox
+  var email = window.document.getElementById("inputEmailDelete").value.trim();
+
+  // Build payload
+  payload={
+    operation: "delete",
+    tableName: dynamoDBTableName,
+    payload: {
+      Item : {
+        id: email,
+      },
+    },
+  };
+  
+  // Send request to lambda
+  fetch(APIURL, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+    body: JSON.stringify(payload),
+  })
+  .then(async (response) =>{
+    // handle response from lambda
+    var message = await response.text();
+    message = JSON.parse(message);
+    console.log(message)
+    if(message["statusCode"] == 200){
+      alert(message.message);
+    }else{
+      throw "An error occurred. Please try again."
+    }
+
+  })
+  .catch((err) => {
+    console.log(err.message);
+    alert(err.message);
+  })
+
+  // Clear textbox
+  window.document.getElementById("inputEmailDelete").value = "";
+
+}
