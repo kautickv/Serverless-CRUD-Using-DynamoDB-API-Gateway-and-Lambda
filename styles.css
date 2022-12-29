@@ -1,4 +1,15 @@
 .buttonRow{
     padding-top: 2%;
     padding-bottom: 3%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+.btn btn-primary btn-lg{
+    padding-top:10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    
 }
