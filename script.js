@@ -249,13 +249,13 @@ async function deleteStudent() {
     if(message["statusCode"] == 200){
       alert(message.message);
     }else{
-      throw "An error occurred. Please try again."
+      throw message.message;
     }
 
   })
   .catch((err) => {
-    console.log(err.message);
-    alert(err.message);
+    console.log(err);
+    alert(err);
   })
 
   // Clear textbox
