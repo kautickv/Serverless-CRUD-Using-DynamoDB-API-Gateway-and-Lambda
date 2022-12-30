@@ -70,10 +70,36 @@ def lambda_handler(event, context):
         
     # Check the operation requested.
     if operation == "read":
-        return dynamoDB.get_item(TableName=event['tableName'], Key = convert_json_to_dynamodb(payload['Item']))
+        response = dynamoDB.get_item(TableName=event['tableName'], Key = convert_json_to_dynamodb(payload['Item']))
+        
+        if (response['ResponseMetadata']['HTTPStatusCode'] != 200):
+            return ({'statusCode': 500, 'message': 'An error occurred in database. Try again later'})
+            
+        # check if item exists
+        if ("Item" in response):
+            
+            #convert response from dynamo format into simple dict.
+            item = {'id': response['Item']['id']['S'], 'first_name': response['Item']['first_name']['S'], 'last_name': response['Item']['last_name']['S'], 'address': response['Item']['address']['S']}
+            
+            return ({'statusCode': 200, 'Item': item, 'message': 'Success'})
+          
+        else:
+            return ({'statusCode': 404, 'message': 'Student not found'})
     
     elif operation == "create":
-        return dynamoDB.put_item(TableName=event['tableName'], Item = convert_json_to_dynamodb(payload['Item']))
+        
+        # Check if student already exists.
+        response = dynamoDB.get_item(TableName=event['tableName'], Key = convert_json_to_dynamodb({'id': payload['Item']['id']}))
+        if ("Item" in response):
+            return ({'statusCode': 409, 'message': 'Student already exists. Please update his info instead.'})
+        
+        response = dynamoDB.put_item(TableName=event['tableName'], Item = convert_json_to_dynamodb(payload['Item']))
+        
+        if (response['ResponseMetadata']['HTTPStatusCode'] == 200):
+            return ({'statusCode': 200, 'message': 'Student has been added in database'})
+        else:
+            return ({'statusCode': 500, 'message': 'Database encountered an error'})
+    
     
     elif operation == "update":
 
@@ -85,18 +111,47 @@ def lambda_handler(event, context):
         record = dynamoDB.get_item(TableName=event['tableName'], Key = key)
 
         if ('Item' in record):
-            # Check if user wants to update the key(ID)
-            if(dynamoFormatItem["newID"]):
-                #delete old email anad add new one
-                pass
+            # Check if user wants to update anything except email (Key)
+            if(len(dynamoFormatItem["newID"]['S'].strip()) == 0):
+                response = dynamoDB.update_item(TableName=event['tableName'], Key = key, AttributeUpdates= convertJsonIntoAttributeUpdateFormat(dynamoFormatItem, 'PUT'))
+                if (response['ResponseMetadata']['HTTPStatusCode'] == 200):
+                    return ({'statusCode': 200, 'message': 'Student info has been updated'})
+                else:
+                    return ({'statusCode': 500, 'message': 'Database encountered an error'})
             else:
-                dynamoDB.update_item(TableName=event['tableName'], Key = key, AttributeUpdates= convertJsonIntoAttributeUpdateFormat(dynamoFormatItem, 'PUT'))
+                #delete old email anad add new one
+                
+                 # Check if the new email being updated already exists in database.
+                response = dynamoDB.get_item(TableName=event['tableName'], Key = convert_json_to_dynamodb({'id': payload['Item']['newID']}))
+                if ("Item" in response):
+                    return ({'statusCode': 409, 'message': 'New email already exists in database. Please use a different email address'})
+                
+                dynamoDB.delete_item(TableName = event['tableName'], Key = convert_json_to_dynamodb({'id': payload['Item']['id']}))
+                payload['Item']['id'] = payload['Item']['newID']
+                payload['Item'].pop('newID')
+                response = dynamoDB.put_item(TableName=event['tableName'], Item = convert_json_to_dynamodb(payload['Item']))
+                if (response['ResponseMetadata']['HTTPStatusCode'] == 200):
+                    return ({'statusCode': 200, 'message': 'Student info has been updated'})
+                else:
+                    return ({'statusCode': 500, 'message': 'Database encountered an error'})
        
         else:
-           return {'status': 404, 'Message': 'Student not found'}
+           return {'status': 404, 'message': 'Student not found'}
         
     elif operation == "delete":
-        return dynamoDB.delete_item(TableName = event['tableName'], Key = convert_json_to_dynamodb(payload['Item']))
+        
+        # Check if student already exists.
+        response = dynamoDB.get_item(TableName=event['tableName'], Key = convert_json_to_dynamodb(payload['Item']))
+        
+        if ('Item' not in response):
+            return ({'statusCode': 404, 'message': 'Student does not exist or has already been deleted'})
+        
+        response = dynamoDB.delete_item(TableName = event['tableName'], Key = convert_json_to_dynamodb(payload['Item']))
+        
+        if (response['ResponseMetadata']['HTTPStatusCode'] == 200):
+            return ({'statusCode': 200, 'message': 'Student has been deleted from database'})
+        else:
+            return ({'statusCode': 500, 'message': 'Database encountered an error'})
         
     elif operation == "list":
         return dynamoDB.scan(TableName = event['tableName'])
