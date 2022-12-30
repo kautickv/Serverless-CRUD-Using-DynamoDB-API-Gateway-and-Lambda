@@ -33,27 +33,27 @@ This project aims to demonstrate proficiency in building a miroservice using AWS
 ## General Guides:
 #### Setting up a Lambda Function
 * Navigate to the [Lambda console](https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/functions) in your AWS Account
-*Click the "Create function" button.
-*Select the "Author from scratch" option and give your function a name.
-*Select "Python 3.8" as the runtime.
-*In the "Permissions" section, choose an the role we created in previous section.
-*Click the "Create function" button to create your Lambda function.
-*In the "Function code" section, write your Python code and use the "**boto3**" library to interact with DynamoDB.
-*In the "Designer" section, click the "Add trigger" button.
-*In the "Trigger configuration" panel, select "API Gateway" as the trigger type and choose the API Gateway that you want to use to trigger your Lambda function. (Note: In the next section, we will create an API Gateway. Once you complete the steps in the next section, re-do this step)
+* Click the "Create function" button.
+* Select the "Author from scratch" option and give your function a name.
+* Select "Python 3.8" as the runtime.
+* In the "Permissions" section, choose an the role we created in previous section.
+* Click the "Create function" button to create your Lambda function.
+* In the "Function code" section, write your Python code and use the "**boto3**" library to interact with DynamoDB.
+* In the "Designer" section, click the "Add trigger" button.
+* In the "Trigger configuration" panel, select "API Gateway" as the trigger type and choose the API Gateway that you want to use to trigger your Lambda function. (Note: In the next section, we will create an API Gateway. Once you complete the steps in the next section, re-do this step)
 
 Your Lambda function should now be able to run Python code and interact with DynamoBD. (Note: The DynamoDB table has not been created yet. We will create it in the last section.)
 
 #### Setting up API Gateway
 * Navigate to the [API Gateway console](https://us-east-1.console.aws.amazon.com/apigateway/main/apis?region=us-east-1) in your AWS account.
-*Click the "Create API" button.
-*Choose the "REST" protocol and click the "Build" button.
-*Give your API a name and choose the "New Resource" option.
-*Create a new resource for each of the CRUD operations. Note: in this project, all CRUD operations are done using "POST" method
-*In the Integration Type dropdown, select "Lambda Function" and then enter the name of the Lambda function (created in previous section) in the Lambda Function text field. 
-*Click the "Actions" dropdown and select "Deploy API"
-*Copy the "Invoke URL" that appears in the Deployment Information panel. This is the URL you will use to access your API endpoint.
-*Test your API endpoint by sending an HTTP request to the "Invoke URL" using a tool such as cURL or Postman.
+* Click the "Create API" button.
+* Choose the "REST" protocol and click the "Build" button.
+* Give your API a name and choose the "New Resource" option.
+* Create a new resource for each of the CRUD operations. Note: in this project, all CRUD operations are done using "POST" method
+* In the Integration Type dropdown, select "Lambda Function" and then enter the name of the Lambda function (created in previous section) in the Lambda Function text field. 
+* Click the "Actions" dropdown and select "Deploy API"
+* Copy the "Invoke URL" that appears in the Deployment Information panel. This is the URL you will use to access your API endpoint.
+* Test your API endpoint by sending an HTTP request to the "Invoke URL" using a tool such as cURL or Postman.
 
 Your API Gateway should now be set up to trigger your lambda function when an HTTP request is sent to the specified endpoint.
 
