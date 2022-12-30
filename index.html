@@ -94,7 +94,11 @@
               required
             />
           </div>
-          <button type="submit" class="btn btn-primary" onClick="addStudent()">
+          <button
+            type="button"
+            class="btn btn-primary"
+            onClick="addStudent()"
+          >
             Add Student
           </button>
         </form>
@@ -112,9 +116,17 @@
                 placeholder="Email"
                 required
               />
+              <br>
+              <button
+                  type="button"
+                  class="btn btn-primary"
+                  onClick="searchStudentToUpdate()"
+                  >
+                  Search
+              </button>
             </div>
           </div>
-          <h5>Fill in the form below with updated information</h5>
+          <h5>Update the form below to change student information</h5>
           <div class="form-row">
             <div class="form-group col-md-6">
               <label>First Name</label>
@@ -172,8 +184,7 @@
         <form>
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label
-                >Input the email of the student to delete</label>
+              <label>Input the email of the student to delete</label>
               <input
                 type="email"
                 class="form-control"
@@ -193,7 +204,7 @@
         </form>
       </div>
 
-      <div id="listStudentDiv" style="margin-top:3%">
+      <div id="listStudentDiv" style="margin-top: 3%">
         <table class="table table-striped">
           <thead>
             <tr>

@@ -132,6 +132,8 @@ async function addStudent() {
     },
   };
 
+  console.log(payload);
+
   fetch(APIURL, {
     method: 'POST',
     headers: {
@@ -147,13 +149,13 @@ async function addStudent() {
       if (message['statusCode'] === 200){
         alert(message.message);
       }else{
-        throw "Could not insert student. Please try again later";
+        throw message.message;
       }
 
     })
     .catch((err) => {
       console.log("There was an error inserting element into database: " + err);
-      alert(err.message)
+      alert(err)
     });
 }
 
@@ -259,4 +261,48 @@ async function deleteStudent() {
   // Clear textbox
   window.document.getElementById("inputEmailDelete").value = "";
 
+}
+
+async function searchStudentToUpdate(){
+  // This function will read in an iteam and get all its associated data and populate the
+  // update student form.
+
+  var email = window.document.getElementById("inputEmailUpdateIdentifier").value;
+  // Create payload
+  payload = {
+    operation: 'read',
+    tableName: dynamoDBTableName,
+    payload:{
+      Item:{
+        id: email,
+      }
+    },
+  };
+
+  // Send request to lambda
+  fetch(APIURL, {
+    method: 'POST',
+    headers:{
+      'Content-Type': 'text/plain',
+    },
+    body: JSON.stringify(payload),
+  })
+  .then(async (response) =>{
+    var message = await response.text();
+    message = JSON.parse(message);
+    if(message.statusCode === 200){
+      // Render values in textbox
+      window.document.getElementById("firstNameUpdate").value = message.Item['first_name'];
+      window.document.getElementById("lastNameUpdate").value = message.Item['last_name'];
+      window.document.getElementById("inputEmailUpdate").value = message.Item['id'];
+      window.document.getElementById("inputAddressUpdate").value = message.Item['address'];
+
+    }else{
+      throw message.message;
+    }
+  })
+  .catch((err) =>{
+    console.log(err);
+    alert(err);
+  })
 }
