@@ -31,6 +31,19 @@ This project aims to demonstrate proficiency in building a miroservice using AWS
 * **_AWS S3_** - Hosts the front-end and make it available on the internet
 
 ## General Guides:
+#### Create an IAM Role for Lambda
+* Navigate to the [IAM console](https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/home) in your AWS account
+* Click the "Roles" menu item on the left side of the screen.
+* Click the "Create role" button.
+* In the "Select type of trusted entity" panel, select "AWS service" as the trusted entity type and choose "Lambda" from the list of AWS services.
+* Click the "Next: Permissions" button to proceed to the next step.
+* In the "Attach permissions policies" panel, search for and select the "**CloudWatchFullAccess**" policy. This will give your Lambda function full access to CloudWatch. (Cloudwatch will later be used to see execution logs)
+* Search for and select the "**AmazonDynamoDBFullAccess**" policy. This will give your Lambda function full access to DynamoDB.
+* Click the "Next: Review" button to review your role.
+* Give your role a name and optional description, then click the "Create role" button.
+
+Your IAM role is not set up to give Lambda function access to Cloudwatch and DynamoDB.
+
 #### Setting up a Lambda Function
 * Navigate to the [Lambda console](https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/functions) in your AWS Account
 * Click the "Create function" button.
@@ -57,4 +70,33 @@ Your Lambda function should now be able to run Python code and interact with Dyn
 
 Your API Gateway should now be set up to trigger your lambda function when an HTTP request is sent to the specified endpoint.
 
-#### Setting up a Lambda Function
+#### Setting up a DynamoDB
+* Navigate to the [DynamoDB console](https://us-east-1.console.aws.amazon.com/dynamodbv2/home?region=us-east-1#dashboard) in your AWS account
+* Click the "Create table" button.
+* In the "Table details" panel, enter a name for your table and write "id" for the partition key. "id" will be of type "String"
+* Leave the "Default settings" option selected.
+* Click the "Create" button to create your table.
+
+Your DynamoDB table is now set up. You can use the boto3 library in your Lambda function to interact with your table and perform CRUD operations.
+
+#### Hosting front-end (HTML, CSS, Javascript) files into S3 bucket.
+* Navigate to the [S3 console](https://s3.console.aws.amazon.com/s3/buckets?region=us-east-1) in your AWS account.
+* Click the "Create bucket" button.
+* Give your bucket a unique name and select a region. (Create it to the same region where the lambda and DynamoDB table are created.)
+* Under "Object Ownership", leave "ACLs enabled" selected.
+* Click the "Create" button to create your bucket and click on your new bucket to open it.
+* Click the "Upload" button.
+* Drag and drop your HTML, CSS and Javascript files into the "Drop files here" area, or click the "Add files" button to select the files from your local file system. 
+* To host your static website on S3, you will need to enable the "Static website hosting" feature for your bucket. To do this, click the "Properties" tab and then click the "Static website hosting" card.
+* In the "Static website hosting" panel, select the "Use this bucket to host a website" option and enter the name of your index document (e.g. "index.html").
+* Click the "Save" button to enable static website hosting for your bucket. Note the URL displayed in the "Static website hosting" panel. You will use this URL to access your website.
+* Finally, navigate to your bucket under "Objects", choose all HTML, CSS, and Javascript file. Click on "Actions" and click on "Make public using ACL" from the dropdown.
+
+Your static website is now hosted on S3 and can be accessed from a web browser. 
+
+
+## Issues experienced while building this project:
+* When performing a fetch from the front-end to the API gateway, I was getting a CORS Policy Violation error. This error was fixed by enabling CORS for this particualr resource in API Gateway. Here's a screenshot of the CORS setting after being updated:
+
+![CORS Setting in API Gateway](./images/CORS_setting.PNG "CORS Setting")
+
