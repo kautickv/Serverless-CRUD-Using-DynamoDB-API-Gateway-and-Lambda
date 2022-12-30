@@ -118,6 +118,14 @@ async function addStudent() {
   var email = window.document.getElementById("inputEmailAdd").value.trim();
   var address = window.document.getElementById("inputAddressAdd").value.trim();
 
+
+   // Check if no textbox is empty
+   if (!(firstName && lastName && email && address)){
+    alert("Please fill in all the textboxes and try again.");
+    return;
+  } 
+
+
   // Insert element in database
   payload = {
     operation: "create",
@@ -169,6 +177,12 @@ async function updateStudent() {
   var lastName = window.document.getElementById("lastNameUpdate").value.trim();
   var email = window.document.getElementById("inputEmailUpdate").value.trim();
   var address = window.document.getElementById("inputAddressUpdate").value.trim();
+
+  // Check if no textbox is empty
+  if (!(firstName && lastName && email && address)){
+    alert("Please fill in all the textboxes and try again.");
+    return;
+  } 
 
   // Build payload.
   payload = {
@@ -222,6 +236,11 @@ async function deleteStudent() {
   // Read the student email address from the textbox
   var email = window.document.getElementById("inputEmailDelete").value.trim();
 
+  if(!email) {
+    alert("Enter an email to delete a student");
+    return;
+  }
+
   // Build payload
   payload={
     operation: "delete",
@@ -268,6 +287,11 @@ async function searchStudentToUpdate(){
   // update student form.
 
   var email = window.document.getElementById("inputEmailUpdateIdentifier").value;
+
+  if (!email) {
+    alert("Enter email of student to search");
+    return;
+  }
   // Create payload
   payload = {
     operation: 'read',
